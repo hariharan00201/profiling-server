@@ -8,12 +8,25 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class JFRExtractorService {
 
     public JFRExtractorService(){}
+
+    void populateColorMap(Map<String,String> colorMap){
+        colorMap.put("Blocked","purple");
+        colorMap.put("Inflate","blue");
+        colorMap.put("Wait","black");
+        colorMap.put("Park","green");
+        colorMap.put("Sleep","orange");
+        colorMap.put("Read","red");
+        colorMap.put("Write","yellow");
+
+    }
 
 
     public ResponseData extractDataFromJFR(String path) throws IOException {
@@ -21,6 +34,10 @@ public class JFRExtractorService {
         List<HeapSummaryData> heapSummaryDataList = new ArrayList<>();
         List<CpuLoadData> cpuLoadDataList = new ArrayList<>();
         List<GCPhasePauseData> gcPhasePauseDataList = new ArrayList<>();
+        List<ThreadEventsDataWrapper> threadEventsDataWrapperList = new ArrayList<>();
+        Map<String,String> colorMap = new HashMap<>();
+        Map<String,List<ThreadEventsData>> threadDataMap = new HashMap<>();
+        populateColorMap(colorMap);
         double young_max = 0,young_tot = 0,old_max = 0,old_tot = 0,all_max = 0,all_tot = 0,young_ct = 0,old_ct = 0,all_ct = 0,pause_max = 0,pause_tot = 0,pause_ct = 0;
 
         try (RecordingFile recordingFile = new RecordingFile(file.toPath())) {
@@ -41,6 +58,43 @@ public class JFRExtractorService {
                     heapSummaryDataList.add(new HeapSummaryData((t3[1].equals("GB")) ? Double.parseDouble(t3[0])*1024000000 : Double.parseDouble(t3[0])*1000000,(Long)value,event.getStartTime().toEpochMilli()));
 
                 }
+                else if ("jdk.JavaMonitorEnter".equals(event.getEventType().getName()) ) {
+                    List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Blocked",colorMap.get("Blocked")));
+                    threadDataMap.put(event.getThread().getOSName(),temp);
+//                    threadEventsDataList.add();
+                }
+                else if ("jdk.JavaMonitorInflate".equals(event.getEventType().getName()) ) {
+                    List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Inflate",colorMap.get("Inflate")));
+                    threadDataMap.put(event.getThread().getOSName(),temp);
+                }
+                else if ("jdk.JavaMonitorWait".equals(event.getEventType().getName()) ) {
+                    List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Wait",colorMap.get("Wait")));
+                    threadDataMap.put(event.getThread().getOSName(),temp);
+                }
+                else if ("jdk.ThreadPark".equals(event.getEventType().getName()) ) {
+                    List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Park",colorMap.get("Park")));
+                    threadDataMap.put(event.getThread().getOSName(),temp);
+                }
+                else if ("jdk.ThreadSleep".equals(event.getEventType().getName()) ) {
+                    List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Sleep",colorMap.get("Sleep")));
+                    threadDataMap.put(event.getThread().getOSName(),temp);
+                }
+                else if ("jdk.SocketRead".equals(event.getEventType().getName()) ) {
+                    List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Read",colorMap.get("Read")));
+                    threadDataMap.put(event.getThread().getOSName(),temp);
+                }
+                else if ("jdk.SocketWrite".equals(event.getEventType().getName()) ) {
+                    List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Write",colorMap.get("Write")));
+                    threadDataMap.put(event.getThread().getOSName(),temp);
+                }
+
 //                else if (f == 0 && "jdk.GCConfiguration".equals(event.getEventType().getName()) ) {
 //                    System.out.println(event+"\n");
 //                    f=1;
@@ -98,6 +152,11 @@ public class JFRExtractorService {
             }
 
         }
-        return new ResponseData(heapSummaryDataList,cpuLoadDataList,new GCSummary(gcPhasePauseDataList,young_ct,young_tot,young_max,all_ct,all_tot,all_max,old_ct,old_tot,old_max,pause_ct,pause_tot,pause_max));
+
+        for(String a: threadDataMap.keySet()){
+            threadEventsDataWrapperList.add(new ThreadEventsDataWrapper(a,threadDataMap.get(a)));
+        }
+
+        return new ResponseData(heapSummaryDataList,cpuLoadDataList,new GCSummary(gcPhasePauseDataList,young_ct,young_tot,young_max,all_ct,all_tot,all_max,old_ct,old_tot,old_max,pause_ct,pause_tot,pause_max), threadEventsDataWrapperList);
     }
 }
