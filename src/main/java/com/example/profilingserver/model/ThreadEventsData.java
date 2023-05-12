@@ -4,14 +4,14 @@ public class ThreadEventsData {
     String name;
     double start;
     double end;
-    String state;
+    String state1;
     String color;
 
     public ThreadEventsData(String name, double start, double end, String state, String color) {
         this.name = name;
         this.start = start;
         this.end = end;
-        this.state = state;
+        this.state1 = state;
         this.color = color;
     }
 
@@ -21,7 +21,7 @@ public class ThreadEventsData {
                 "name='" + name + '\'' +
                 ", start=" + start +
                 ", end=" + end +
-                ", state='" + state + '\'' +
+                ", state='" + state1 + '\'' +
                 ", color='" + color + '\'' +
                 '}';
     }
