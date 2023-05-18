@@ -14,8 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
@@ -29,28 +33,32 @@ public class Controller {
         this.jfrExtractorService = jfrExtractorService;
     }
 
-    @GetMapping()
-    public ResponseEntity<?> getUsers() throws IOException {
-        ResponseData responseData = jfrExtractorService.extractDataFromJFR("src/main/resources/static/sample-1.jfr");
-//        System.out.println(responseData.toString());
-//        MultiValueMap<String, String> headers = new HttpHeaders();
-//        headers.put(HttpHeaders.ACCEPT, Collections.singletonList(MediaType.APPLICATION_JSON_VALUE);
-//        System.out.println(headers.get(HttpHeaders.ACCEPT));
-//        responseHeaders.addAll(Collections.singletonList(MediaType.APPLICATION_JSON));
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-//        MyObject myObject = new MyObject();
-//        String json = objectMapper.writeValueAsString(responseData);
-//        Gson gson = new Gson();
+    @GetMapping("/charts/{filename}")
+    public ResponseEntity<?> getUsers(@PathVariable String filename) throws IOException {
+        ResponseData responseData = jfrExtractorService.extractDataFromJFR("src/main/resources/static/"+filename);
+
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(responseData);
         System.out.println(json);
         return ResponseEntity.ok(json);
     }
 
-//    @ResponseBody
-//    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-//    public String handleHttpMediaTypeNotAcceptableException() {
-//        return "acceptable MIME type:" + MediaType.APPLICATION_JSON_VALUE;
-//    }
+
+    @PostMapping("/upload-file")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file){
+        try {
+            InputStream in = file.getInputStream();
+            FileOutputStream f = new FileOutputStream("src/main/resources/static/"+file.getOriginalFilename());
+            int ch = 0;
+            while ((ch = in.read()) != -1) {
+                f.write(ch);
+            }
+
+            f.flush();
+            f.close();
+            return ResponseEntity.ok(file.getOriginalFilename());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+        }
+    }
 }
