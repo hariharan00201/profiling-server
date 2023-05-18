@@ -35,7 +35,7 @@ public class Controller {
 
     @GetMapping("/charts/{filename}")
     public ResponseEntity<?> getUsers(@PathVariable String filename) throws IOException {
-        ResponseData responseData = jfrExtractorService.extractDataFromJFR("src/main/resources/static/"+filename);
+        ResponseData responseData = jfrExtractorService.extractDataFromJFR("target/classes/static/"+filename);
 
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(responseData);
@@ -48,7 +48,7 @@ public class Controller {
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file){
         try {
             InputStream in = file.getInputStream();
-            FileOutputStream f = new FileOutputStream("src/main/resources/static/"+file.getOriginalFilename());
+            FileOutputStream f = new FileOutputStream("target/classes/static/"+file.getOriginalFilename());
             int ch = 0;
             while ((ch = in.read()) != -1) {
                 f.write(ch);
