@@ -34,7 +34,7 @@ public class ThreadEventsDataWrapper {
         this.name = name;
         this.data = data;
         this.shape = "bar";
-        this.pointWidth=20;
+        this.pointWidth=10;
         this.pointPadding=5;
         this.pointPlacement = 0.7f;
 //        this.dataLabels = new dataLabels(true,data.get(0).state1);

@@ -60,38 +60,39 @@ public class JFRExtractorService {
                 }
                 else if ("jdk.JavaMonitorEnter".equals(event.getEventType().getName()) ) {
                     List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
-                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Blocked",colorMap.get("Blocked")));
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Blocked",colorMap.get("Blocked"),event.toString().substring(event.toString().indexOf("{")+1,event.toString().indexOf("stackTrace"))));
                     threadDataMap.put(event.getThread().getOSName(),temp);
 //                    threadEventsDataList.add();
                 }
                 else if ("jdk.JavaMonitorInflate".equals(event.getEventType().getName()) ) {
                     List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
-                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Inflate",colorMap.get("Inflate")));
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Inflate",colorMap.get("Inflate"),event.toString().substring(event.toString().indexOf("{")+1,event.toString().indexOf("stackTrace"))));
                     threadDataMap.put(event.getThread().getOSName(),temp);
                 }
                 else if ("jdk.JavaMonitorWait".equals(event.getEventType().getName()) ) {
                     List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
-                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Wait",colorMap.get("Wait")));
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Wait",colorMap.get("Wait"),event.toString().substring(event.toString().indexOf("{")+1,event.toString().indexOf("stackTrace"))));
                     threadDataMap.put(event.getThread().getOSName(),temp);
                 }
                 else if ("jdk.ThreadPark".equals(event.getEventType().getName()) ) {
                     List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
-                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Park",colorMap.get("Park")));
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Park",colorMap.get("Park"),event.toString().substring(event.toString().indexOf("{")+1,event.toString().indexOf("stackTrace"))));
                     threadDataMap.put(event.getThread().getOSName(),temp);
+//                    System.out.println();
                 }
                 else if ("jdk.ThreadSleep".equals(event.getEventType().getName()) ) {
                     List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
-                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Sleep",colorMap.get("Sleep")));
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Sleep",colorMap.get("Sleep"),event.toString().substring(event.toString().indexOf("{")+1,event.toString().indexOf("stackTrace"))));
                     threadDataMap.put(event.getThread().getOSName(),temp);
                 }
                 else if ("jdk.SocketRead".equals(event.getEventType().getName()) ) {
                     List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
-                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Read",colorMap.get("Read")));
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Read",colorMap.get("Read"),event.toString().substring(event.toString().indexOf("{")+1,event.toString().indexOf("stackTrace"))));
                     threadDataMap.put(event.getThread().getOSName(),temp);
                 }
                 else if ("jdk.SocketWrite".equals(event.getEventType().getName()) ) {
                     List<ThreadEventsData> temp = threadDataMap.getOrDefault(event.getThread().getOSName(),new ArrayList<>());
-                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Write",colorMap.get("Write")));
+                    temp.add(new ThreadEventsData(event.getThread().getOSName(),event.getStartTime().toEpochMilli(),event.getEndTime().toEpochMilli(),"Write",colorMap.get("Write"),event.toString().substring(event.toString().indexOf("{")+1,event.toString().indexOf("stackTrace"))));
                     threadDataMap.put(event.getThread().getOSName(),temp);
                 }
 

@@ -6,13 +6,15 @@ public class ThreadEventsData {
     double end;
     String state1;
     String color;
+    String tooltip;
 
-    public ThreadEventsData(String name, double start, double end, String state, String color) {
+    public ThreadEventsData(String name, double start, double end, String state, String color,String tooltip) {
         this.name = name;
         this.start = start;
         this.end = end;
         this.state1 = state;
         this.color = color;
+        this.tooltip = tooltip;
     }
 
     @Override
